@@ -13,6 +13,25 @@
     body { font-family: 'Roboto', sans-serif; margin: 0; background-color: var(--light-gray); color: var(--text-color); padding-bottom: 100px; }
     header { background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)); color: white; padding: 20px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
     header h1 { margin: 0; font-size: 1.8em; font-weight: 500; }
+    .selector-container {
+      text-align: center;
+      padding: 15px;
+      background-color: #fff;
+      margin: 0 20px;
+      border-radius: var(--border-radius);
+      box-shadow: var(--card-shadow);
+      border-top: 3px solid var(--secondary-color);
+    }
+    .selector-container label {
+      font-weight: 500;
+      margin-right: 10px;
+    }
+    #restaurante-selector {
+      padding: 8px 12px;
+      border-radius: 4px;
+      border: 1px solid var(--medium-gray);
+      font-size: 1em;
+    }
     .tab-nav { display: flex; background-color: white; box-shadow: var(--card-shadow); margin: 20px; border-radius: var(--border-radius); overflow: hidden; }
     .tab-link { flex: 1; padding: 15px 10px; cursor: pointer; border: none; background-color: transparent; font-size: 1em; font-weight: 500; color: var(--primary-color); transition: background-color 0.3s, color 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; }
     .tab-link:hover { background-color: #e3f2fd; }

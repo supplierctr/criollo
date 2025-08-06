@@ -96,21 +96,17 @@
     async function enviarDatosAGoogleSheets() { 
         const url = "https://script.google.com/macros/s/AKfycbxanz_WVCdDGmBc-8melWhb40yhbcDoYr7QtyPRhD-WqlPOVisrG2DKiU8kzPcnmPs/exec";
         const btn = document.getElementById('guardar-en-sheets');
+        const restaurante = document.getElementById('restaurante-selector').value;
         
-        // --- NUEVA LÓGICA PARA RELLENAR CEROS ---
         const datosParaEnviar = {
-            regular: datosPedidoActual.regular.map(item => ({
-                ...item,
-                stock: item.stock || '0',
-                pedido: item.pedido || '0'
-            })),
-            extra: datosPedidoActual.extra.map(item => ({
-                ...item,
-                stock: item.stock || '0',
-                pedido: item.pedido || '0'
-            }))
+            regular: datosPedidoActual.regular.map(item => ({ ...item, stock: item.stock || '0', pedido: item.pedido || '0' })),
+            extra: datosPedidoActual.extra.map(item => ({ ...item, stock: item.stock || '0', pedido: item.pedido || '0' }))
         };
-        // --- FIN DE LA NUEVA LÓGICA ---
+
+        const postData = {
+            restaurante: restaurante,
+            datos: datosParaEnviar
+        };
 
         btn.disabled = true; 
         btn.innerHTML = '<i class="material-icons">hourglass_top</i> Guardando...'; 
@@ -119,9 +115,9 @@
                 method: 'POST', 
                 mode: 'no-cors', 
                 headers: { 'Content-Type': 'text/plain;charset=utf-8', }, 
-                body: JSON.stringify(datosParaEnviar) // Usamos el nuevo objeto
+                body: JSON.stringify(postData) // Enviamos el objeto completo
             }); 
-            alert('Datos enviados a Google Sheets. Por favor, verifica la hoja de cálculo para confirmar.'); 
+            alert(`Datos enviados a Google Sheets para ${restaurante}.`); 
         } catch (error) { 
             console.error('Error al enviar los datos:', error); 
             alert('Hubo un error al enviar los datos. Revisa la consola del navegador (F12) para ver los detalles.'); 
@@ -130,10 +126,13 @@
             btn.innerHTML = '<i class="material-icons">cloud_upload</i> Guardar en Sheets'; 
         } 
     }
+
     async function cargarMetricas() {
-        const url = "https://script.google.com/macros/s/AKfycbxanz_WVCdDGmBc-8melWhb40yhbcDoYr7QtyPRhD-WqlPOVisrG2DKiU8kzPcnmPs/exec";
+        const restaurante = document.getElementById('restaurante-selector').value;
+        const url = `https://script.google.com/macros/s/AKfycbxanz_WVCdDGmBc-8melWhb40yhbcDoYr7QtyPRhD-WqlPOVisrG2DKiU8kzPcnmPs/exec?restaurante=${restaurante}`;
         const btn = document.getElementById('cargar-metricas');
         const tablaMetricasTbody = document.getElementById('tabla-metricas').querySelector('tbody');
+        
         btn.disabled = true;
         btn.innerHTML = '<i class="material-icons">hourglass_top</i> Cargando...';
         tablaMetricasTbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">Cargando datos...</td></tr>';
@@ -147,7 +146,7 @@
             registrosCargados = data;
             document.getElementById('calendario-container').style.display = 'block';
             generarCalendario();
-            tablaMetricasTbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Selecciona un día del calendario para ver sus registros.</td></tr>';
+            tablaMetricasTbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">Selecciona un día del calendario para ver sus registros.</td></tr>';
 
         } catch (error) {
             console.error('Error al cargar las métricas:', error);
