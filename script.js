@@ -123,14 +123,11 @@
               data.slice().reverse().forEach(registro => {
                 const fila = document.createElement('tr');
                 fila.innerHTML = `
+                  <td>${registro.Fecha || 'N/A'}</td>
                   <td>${registro.Artículo || 'N/A'}</td>
                   <td>${registro.Stock || '0'}</td>
                   <td>${registro.Pedido || '0'}</td>
                 `;
-                // Añadimos la fecha al principio de la fila para que sea visible
-                const celdaFecha = document.createElement('td');
-                celdaFecha.textContent = registro.Fecha || 'N/A';
-                fila.prepend(celdaFecha);
                 tablaMetricasTbody.appendChild(fila);
               });
             } else {
