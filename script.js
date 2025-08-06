@@ -64,10 +64,10 @@ async function enviarDatosAGoogleSheets() {
     }
 }
 
-async function cargarStockDeHoy() {
+async function cargarPedidoDeHoy() {
     const restaurante = document.getElementById('restaurante-selector').value;
     const url = `https://script.google.com/macros/s/AKfycbxanz_WVCdDGmBc-8melWhb40yhbcDoYr7QtyPRhD-WqlPOVisrG2DKiU8kzPcnmPs/exec?restaurante=${restaurante}`;
-    const btn = document.getElementById('cargar-stock-hoy');
+    const btn = document.getElementById('cargar-pedido-hoy');
     btn.disabled = true;
     btn.innerHTML = '<i class="material-icons">hourglass_top</i> Cargando...';
     try {
@@ -77,24 +77,32 @@ async function cargarStockDeHoy() {
         const fechaDeHoy = getFechaLocalYYYYMMDD();
         const registrosDeHoy = data.filter(r => r.Fecha === fechaDeHoy);
         if (registrosDeHoy.length > 0) {
+            if (!confirm("Esto reemplazará tu pedido actual en pantalla. ¿Continuar?")) return;
+            datosPedidoActual = { regular: [], extra: [] };
+            tablaStockExtraTbody.innerHTML = '';
             registrosDeHoy.forEach(registro => {
-                const selector = `tr[data-articulo="${registro.Artículo.replace(/"/g, '\"')}"] .input-stock`;
-                const inputStock = tablaPrincipalTbody.querySelector(selector);
-                if (inputStock) {
-                    inputStock.value = registro.Stock;
-                    actualizarDatoEnMemoria(registro.Artículo, 'stock', registro.Stock);
+                const esExtra = registro.Artículo.startsWith('[Extra]');
+                const nombreArticulo = esExtra ? registro.Artículo.substring(8) : registro.Artículo;
+                const dato = { articulo: nombreArticulo, stock: registro.Stock, pedido: registro.Pedido };
+                if (esExtra) {
+                    datosPedidoActual.extra.push(dato);
+                    const nuevaFila = generarFilaExtra(dato.articulo, dato.stock, dato.pedido);
+                    tablaStockExtraTbody.appendChild(nuevaFila);
+                } else {
+                    datosPedidoActual.regular.push(dato);
                 }
             });
-            alert("Stock de hoy cargado correctamente.");
+            generarTablaInicial();
+            alert("Pedido de hoy cargado correctamente.");
         } else {
             alert("No se han guardado datos el día de hoy.");
         }
     } catch (error) {
-        console.error("Error al cargar el stock de hoy:", error);
-        alert("No se pudo cargar el stock de hoy.");
+        console.error("Error al cargar el pedido de hoy:", error);
+        alert("No se pudo cargar el pedido de hoy.");
     } finally {
         btn.disabled = false;
-        btn.innerHTML = '<i class="material-icons">today</i> Cargar Stock de Hoy';
+        btn.innerHTML = '<i class="material-icons">today</i> Cargar Pedido de Hoy';
     }
 }
 
@@ -136,7 +144,7 @@ window.addEventListener('load', () => {
   document.getElementById('guardar-en-sheets').addEventListener('click', enviarDatosAGoogleSheets);
   document.getElementById('borrar-datos').addEventListener('click', borrarDatos);
   document.getElementById('cargar-metricas').addEventListener('click', cargarMetricas);
-  document.getElementById('cargar-stock-hoy').addEventListener('click', cargarStockDeHoy);
+  document.getElementById('cargar-pedido-hoy').addEventListener('click', cargarPedidoDeHoy); // <-- ID DEL BOTÓN CAMBIADO
   btnAgregarArticulo.addEventListener('click', agregarArticuloExtra);
   inputNuevoArticulo.addEventListener('keypress', (event) => { if (event.key === 'Enter') { event.preventDefault(); agregarArticuloExtra(); } });
   // Eventos del calendario
