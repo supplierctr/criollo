@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pedido Criollo 3.2 - GitHub Edition</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <style>
+    :root {
+      --primary-color: #1976D2;
+      --primary-dark: #004ba0;
+      --secondary-color: #4CAF50;
+      --danger-color: #D32F2F;
+      --light-gray: #f5f5f5;
+      --medium-gray: #e0e0e0;
+      --dark-gray: #424242;
+      --text-color: #333;
+      --card-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      --border-radius: 8px;
+    }
+    body {
+      font-family: 'Roboto', sans-serif;
+      margin: 0;
+      background-color: var(--light-gray);
+      color: var(--text-color);
+      padding-bottom: 100px; /* Space for fixed footer */
+    }
+    header {
+      background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+      color: white;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    header h1 { margin: 0; font-size: 1.8em; font-weight: 500; }
+    .tab-nav {
+      display: flex;
+      background-color: white;
+      box-shadow: var(--card-shadow);
+      margin: 20px;
+      border-radius: var(--border-radius);
+      overflow: hidden;
+    }
+    .tab-link {
+      flex: 1; padding: 15px 10px; cursor: pointer; border: none;
+      background-color: transparent; font-size: 1em; font-weight: 500;
+      color: var(--primary-color); transition: background-color 0.3s, color 0.3s;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .tab-link:hover { background-color: #e3f2fd; }
+    .tab-link.active { background-color: var(--primary-color); color: white; }
+    .tab-content { display: none; padding: 0 20px; }
+    .tab-content.active { display: block; }
+    .card {
+      background-color: white; border-radius: var(--border-radius);
+      box-shadow: var(--card-shadow); padding: 20px; margin-bottom: 20px;
+    }
+    .card h2 {
+      margin-top: 0; font-size: 1.5em; color: var(--primary-color);
+      border-bottom: 2px solid var(--light-gray); padding-bottom: 10px; margin-bottom: 20px;
+    }
+    #tabla-principal-wrapper {
+      max-height: 500px; overflow-y: auto;
+      border: 1px solid var(--medium-gray); border-radius: var(--border-radius);
+    }
+    .styled-table { width: 100%; border-collapse: collapse; }
+    .styled-table th {
+      position: sticky; top: 0; background-color: #f8f9fa; z-index: 1;
+      padding: 12px 15px; text-align: left; font-weight: 700;
+      font-size: 1em; border-bottom: 2px solid var(--medium-gray);
+    }
+    .styled-table td { border-bottom: 1px solid var(--medium-gray); padding: 12px 15px; }
+    .styled-table tr:last-child td { border-bottom: none; }
+    .styled-table tr:hover { background-color: #f1f8e9; }
+    input[type="number"], input[type="text"] {
+      width: 80px; padding: 8px; box-sizing: border-box;
+      border: 1px solid var(--medium-gray); border-radius: 4px;
+      text-align: right; font-size: 1em;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    input[type="number"]:focus, input[type="text"]:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.25); outline: none;
+    }
+    #agregar-extra-form { display: flex; gap: 10px; margin-bottom: 20px; align-items: center; }
+    #agregar-extra-form input[type="text"] { flex-grow: 1; text-align: left; }
+    .btn {
+      padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer;
+      font-size: 0.95em; font-weight: 500; text-transform: uppercase;
+      transition: background-color 0.2s, transform 0.1s;
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn-primary { background-color: var(--primary-color); color: white; }
+    .btn-primary:hover { background-color: var(--primary-dark); }
+    .btn-secondary { background-color: var(--secondary-color); color: white; }
+    .btn-secondary:hover { background-color: #388E3C; }
+    .btn-danger { background-color: var(--danger-color); color: white; }
+    .btn-danger:hover { background-color: #C62828; }
+    .btn:disabled { background-color: #bdbdbd; cursor: not-allowed; transform: none; }
+    .fixed-footer {
+      position: fixed; bottom: 0; left: 0; width: 100%;
+      background-color: white; box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+      padding: 15px 20px; box-sizing: border-box;
+    }
+    .button-container { display: flex; justify-content: space-around; gap: 10px; flex-wrap: wrap; }
+    @media (max-width: 600px) {
+      .tab-link { font-size: 0.85em; gap: 4px; }
+      .btn { padding: 8px 10px; font-size: 0.8em; }
+      .fixed-footer { padding: 10px; }
+      .button-container { gap: 5px; }
+      header h1 { font-size: 1.5em; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Pedido de Criollo</h1>
+  </header>
+
+  <div class="tab-nav">
+    <button class="tab-link active" data-tab="pedido"><i class="material-icons">list_alt</i>Pedido Principal</button>
+    <button class="tab-link" data-tab="extra"><i class="material-icons">add_shopping_cart</i>Stock Extra</button>
+  </div>
+
+  <div id="pedido" class="tab-content active">
+    <div class="card">
+      <div id="tabla-principal-wrapper">
+        <table id="tabla-principal" class="styled-table">
+          <thead>
+            <tr>
+              <th style="width: 90px;">Stock</th>
+              <th style="width: 90px;">Pedido</th>
+              <th>Artículo</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="extra" class="tab-content">
+    <div class="card">
+      <h2>Añadir Stock Extra</h2>
+      <div id="agregar-extra-form">
+        <input type="text" id="nuevo-articulo-extra" placeholder="Nombre del nuevo artículo">
+        <button id="agregar-articulo-extra" class="btn btn-secondary"><i class="material-icons">add</i>Agregar</button>
+      </div>
+      <table id="tabla-stock-extra" class="styled-table">
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="fixed-footer">
+    <div class="button-container">
+      <button class="btn btn-danger" id="borrar-datos" title="Borrar datos del pedido actual"><i class="material-icons">delete</i>Borrar Pedido</button>
+      <button class="btn btn-primary" id="guardar-en-sheets" title="Guardar el pedido actual en Google Sheets"><i class="material-icons">cloud_upload</i>Guardar en Sheets</button>
+    </div>
+  </div>
+
+  <script>
+    function setupTabs() {
+      const tabLinks = document.querySelectorAll('.tab-link');
+      const tabContents = document.querySelectorAll('.tab-content');
+      tabLinks.forEach(link => {
+        link.addEventListener('click', () => {
+          const tabId = link.dataset.tab;
+          tabLinks.forEach(innerLink => innerLink.classList.remove('active'));
+          tabContents.forEach(content => content.classList.remove('active'));
+          link.classList.add('active');
+          document.getElementById(tabId).classList.add('active');
+        });
+      });
+    }
+
+    const articulos = [
+      "ACEITE DE GIRASOL ALSAMAR FREIDORA", "ACEITE DE OLIVA (SALON)", "BIDON DE ACEITE OLIVA", "VINAGRE DE VINO",
+      "VINAGRE DE ALCOHOL", "ACEITUNA VERDE SIN CAROZO", "ACEITUNA NEGRA SIN CAROZO", "ACETO BALSAMICO",
+      "ALCAPARRA", "ALMENDRA", "NUECES", "ALMIDON DE MAIZ", "ANCHOA EN ACEITE", "ARROZ CARNAROLI", "ARROZ GALLO",
+      "ARVEJA CONGELADA", "ATUN AL NATURAL LOMO", "AVELLANA CON CASCARA", "HARINA 0000 DE FUERZA CENTRAL NORTE",
+      "KETCHUP EN SOBRE", "KETCHUP SACHE", "MAYONESA EN SOBRE HELLMANS", "MAYONESA SACHE HELLMANS", "MOSTAZA EN SOBRE",
+      "MOSTAZA SACHE", "MOSTAZA ANTIGUA DIJON", "ACEITE DE OLIVA PARA DELY", "VINAGRE EN SOBRE",
+      "QUESO DELY", "SAL SOBRE DELY", "MIEL", "PALMITO", "PAN RALLADO PREFERIDO", "REBOZADOR PREFERIDO", "SALSA TABASCO",
+      "SEMILLA DE SESAMO", "SEMOLIN", "CALDO DE VERDURA", "CALDO DE POLLO", "DEMIGLASE", "FUMET", "HUMO LIQUIDO",
+      "COMINO MOLIDO", "CURCUMA", "OREGANO DESHIDRATADO", "PAPRIKA", "PIMENTON", "PIMIENTA CALLENA MOLIDA", "TOMATE SECO",
+      "SALSA GOLF", "SALSA SOJA", "TE", "MATE COCIDO", "TE NEGRO", "TE DIGESTIVO", "PIMIENTA NEGRA EN GRANOS",
+      "CREMA DE LECHE MILKAUT 44°", "LECHE ENTERA VERONICA", "LECHE DESCREMADA VERONICA", "QUESO CREMA MILKAUT",
+      "QUESO AZUL", "QUESO FRESCO LA PAULINA", "QUESO SARDO", "QUESO DE MAQUINA TYBO", "RICOTA", "JAMON COCIDO CAMPO AUSTRAL",
+      "LEVADURA FRESCA", "MANTECA PILON", "AZUCAR LEDESMA", "AZUCAR NEGRA", "CAFÉ INSTANTANEO", "JUGO EN SOBRE",
+      "AZUCAR EN SOBRE LAVAZZA", "EDULCORANTE LAVAZZA", "CAFE LAVAZZA/MOKA PACK", "VINO TINTO ARIZU", "VINO BLANCO ARIZU",
+      "CHOCLO CONGELADO", "BROCOLI CONGELADO", "ESPINACA CONGELADA", "CHAUCHA CONGELADA", "AJI EN VINAGRE", "SAL FINA",
+      "SAL PARRILLA", "DULCE DE LECHE RESPOSTERO", "FRUTOS ROJOS CONGELADOS", "CANELA EN POLVO", "AZUCAR IMPALPABLE",
+      "CHOCOLATE AMARGO AGUILA", "CACAO EN POLVO", "ADOBO PARA PIZZA", "MINERVA (JUGO DE LIMON)",
+      "PURE DE TOMATE TRITURADO", "PURE DE TOMATE PERITA", "CHEDDAR LIQUIDO", "CHEDDAR EN FETAS", "CANTIMPALO",
+      "JAMON CRUDO", "FIDEOS TURABUZON", "FIDEOS PENNE RIGETE", "FIDEOS TALLARINES", "HARINA LEUDANTE", "ESENCIA DE VAINILLA",
+      "NUEZ MOSCADA", "MEMBRILLO", "BATATA", "MUZZARELLA", "RON", "WHISKY", "VINO MARSALA"
+    ];
+
+    const tablaPrincipalWrapper = document.getElementById('tabla-principal-wrapper');
+    const tablaPrincipalTbody = document.getElementById('tabla-principal').querySelector('tbody');
+    const tablaStockExtraTbody = document.getElementById('tabla-stock-extra').querySelector('tbody');
+    const inputNuevoArticulo = document.getElementById('nuevo-articulo-extra');
+    const btnAgregarArticulo = document.getElementById('agregar-articulo-extra');
+
+    let datosPedidoActual = { regular: [], extra: [] };
+    const elementosPorLote = 25;
+    let indiceUltimoElementoMostrado = 0;
+    let cargandoMas = false;
+
+    function renderizarLoteArticulos() {
+      if (indiceUltimoElementoMostrado >= articulos.length) return;
+      const fin = Math.min(indiceUltimoElementoMostrado + elementosPorLote, articulos.length);
+      const articulosLote = articulos.slice(indiceUltimoElementoMostrado, fin);
+      const datosRegularesActuales = datosPedidoActual.regular || [];
+      const fragmento = document.createDocumentFragment();
+
+      articulosLote.forEach(articulo => {
+        const datoGuardado = datosRegularesActuales.find(d => d.articulo === articulo);
+        const stockVal = datoGuardado ? datoGuardado.stock : '';
+        const pedidoVal = datoGuardado ? datoGuardado.pedido : '';
+
+        const fila = document.createElement('tr');
+        fila.dataset.articulo = articulo;
+        fila.innerHTML = `
+          <td data-label="Stock"><input type="number" min="0" step="any" class="input-stock" value="${stockVal}" title="Stock ${articulo}"></td>
+          <td data-label="Pedido"><input type="number" min="0" step="any" class="input-pedido" value="${pedidoVal}" title="Pedido ${articulo}"></td>
+          <td data-label="Artículo" class="nombre-articulo">${articulo}</td>
+        `;
+        fragmento.appendChild(fila);
+      });
+
+      tablaPrincipalTbody.appendChild(fragmento);
+      indiceUltimoElementoMostrado = fin;
+    }
+
+    function generarTablaInicial() {
+      tablaPrincipalTbody.innerHTML = '';
+      indiceUltimoElementoMostrado = 0;
+      renderizarLoteArticulos();
+      tablaPrincipalWrapper.scrollTop = 0;
+    }
+
+    function generarFilaExtra(nombreArticulo, stockVal = '', pedidoVal = '') {
+      const fila = document.createElement('tr');
+      fila.dataset.articulo = nombreArticulo;
+      fila.innerHTML = `
+        <td><input type="number" min="0" step="any" class="input-stock" placeholder="Stock" value="${stockVal}" title="Stock ${nombreArticulo}"></td>
+        <td><input type="number" min="0" step="any" class="input-pedido" placeholder="Pedido" value="${pedidoVal}" title="Pedido ${nombreArticulo}"></td>
+        <td><span class="nombre-articulo-extra" title="${nombreArticulo}">${nombreArticulo}</span></td>
+        <td><button class="btn btn-danger eliminar-extra" title="Eliminar artículo ${nombreArticulo}"><i class="material-icons">delete</i></button></td>
+      `;
+      fila.querySelector('.eliminar-extra').addEventListener('click', eliminarArticuloExtra);
+      return fila;
+    }
+
+    function actualizarDatoEnMemoria(articuloNombre, tipo, valor) {
+      const esExtra = !articulos.includes(articuloNombre);
+      let listaDatos = esExtra ? datosPedidoActual.extra : datosPedidoActual.regular;
+      let datoExistente = listaDatos.find(d => d.articulo === articuloNombre);
+
+      if (datoExistente) {
+        datoExistente[tipo] = valor;
+      } else {
+        const nuevoDato = { articulo: articuloNombre };
+        nuevoDato[tipo] = valor;
+        nuevoDato[tipo === 'stock' ? 'pedido' : 'stock'] = '';
+        listaDatos.push(nuevoDato);
+      }
+    }
+    
+    function cargarDatosExtra() {
+      tablaStockExtraTbody.innerHTML = '';
+      if (datosPedidoActual.extra?.length) {
+        datosPedidoActual.extra.forEach(dato => {
+          const nuevaFila = generarFilaExtra(dato.articulo, dato.stock, dato.pedido);
+          tablaStockExtraTbody.appendChild(nuevaFila);
+        });
+      }
+    }
+
+    function borrarDatos() {
+      if (!confirm("¿Estás seguro de borrar los datos del pedido actual?")) return;
+      datosPedidoActual = { regular: [], extra: [] };
+      generarTablaInicial();
+      tablaStockExtraTbody.innerHTML = '';
+    }
+
+    function agregarArticuloExtra() {
+      const nombreNuevo = inputNuevoArticulo.value.trim();
+      if (nombreNuevo) {
+        const existe = datosPedidoActual.extra.some(d => d.articulo.toLowerCase() === nombreNuevo.toLowerCase());
+        if (existe) {
+          alert(`El artículo "${nombreNuevo}" ya existe en Stock Extra.`);
+          return;
+        }
+        datosPedidoActual.extra.push({ articulo: nombreNuevo, stock: '', pedido: '' });
+        const nuevaFila = generarFilaExtra(nombreNuevo);
+        tablaStockExtraTbody.appendChild(nuevaFila);
+        inputNuevoArticulo.value = '';
+      } else {
+        alert("Introduce un nombre para el artículo extra.");
+      }
+    }
+
+    function eliminarArticuloExtra(event) {
+      const filaParaEliminar = event.target.closest('tr');
+      if (filaParaEliminar) {
+        const nombreArticulo = filaParaEliminar.dataset.articulo;
+        datosPedidoActual.extra = datosPedidoActual.extra.filter(d => d.articulo !== nombreArticulo);
+        filaParaEliminar.remove();
+      }
+    }
+
+    function agregarEventosInputs() {
+      tablaPrincipalTbody.addEventListener('input', (event) => {
+        if (event.target.matches('.input-stock') || event.target.matches('.input-pedido')) {
+          const fila = event.target.closest('tr');
+          const articulo = fila.dataset.articulo;
+          const tipo = event.target.classList.contains('input-stock') ? 'stock' : 'pedido';
+          actualizarDatoEnMemoria(articulo, tipo, event.target.value);
+        }
+      });
+      tablaStockExtraTbody.addEventListener('input', (event) => {
+        if (event.target.matches('.input-stock') || event.target.matches('.input-pedido')) {
+          const fila = event.target.closest('tr');
+          const articulo = fila.dataset.articulo;
+          const tipo = event.target.classList.contains('input-stock') ? 'stock' : 'pedido';
+          actualizarDatoEnMemoria(articulo, tipo, event.target.value);
+        }
+      });
+    }
+
+    function manejarScrollTablaPrincipal() {
+      if (cargandoMas || indiceUltimoElementoMostrado >= articulos.length) return;
+      const wrapper = tablaPrincipalWrapper;
+      if (wrapper.scrollTop + wrapper.clientHeight >= wrapper.scrollHeight - 150) {
+        cargandoMas = true;
+        renderizarLoteArticulos();
+        setTimeout(() => { cargandoMas = false; }, 100);
+      }
+    }
+
+    async function enviarDatosAGoogleSheets() {
+        const url = "https://script.google.com/macros/s/AKfycbxanz_WVCdDGmBc-8melWhb40yhbcDoYr7QtyPRhD-WqlPOVisrG2DKiU8kzPcnmPs/exec";
+        const btn = document.getElementById('guardar-en-sheets');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="material-icons">hourglass_top</i> Guardando...';
+
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                mode: 'no-cors', // Required to avoid CORS errors with simple Apps Script POSTs
+                headers: {
+                  // The Content-Type header is not strictly necessary for 'no-cors'
+                  // but it's good practice. The Apps Script will receive it as text/plain.
+                  'Content-Type': 'text/plain;charset=utf-8',
+                },
+                // The body is the raw JSON string
+                body: JSON.stringify(datosPedidoActual)
+            });
+            
+            // 'no-cors' prevents reading the response, so we can't confirm success here.
+            // We have to assume it worked and let the user check the sheet.
+            alert('Datos enviados a Google Sheets. Por favor, verifica la hoja de cálculo para confirmar que se guardaron correctamente.');
+
+        } catch (error) {
+            console.error('Error al enviar los datos:', error);
+            alert('Hubo un error al enviar los datos. Revisa la consola del navegador (F12) para ver los detalles del error.');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="material-icons">cloud_upload</i> Guardar en Sheets';
+        }
+    }
+
+
+    window.addEventListener('load', () => {
+      setupTabs();
+      generarTablaInicial();
+      agregarEventosInputs();
+
+      document.getElementById('guardar-en-sheets').addEventListener('click', enviarDatosAGoogleSheets);
+      document.getElementById('borrar-datos').addEventListener('click', borrarDatos);
+      btnAgregarArticulo.addEventListener('click', agregarArticuloExtra);
+      inputNuevoArticulo.addEventListener('keypress', (event) => {
+        if (event.key === 'Enter') { event.preventDefault(); agregarArticuloExtra(); }
+      });
+      tablaPrincipalWrapper.addEventListener('scroll', manejarScrollTablaPrincipal);
+    });
+  </script>
+</body>
+</html>
