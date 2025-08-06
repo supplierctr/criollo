@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pedido Criollo 3.2 - GitHub Edition</title>
+  <title>Pedido Criollo 4 - GitHub Edition</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap">
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
   <style>
@@ -60,7 +60,7 @@
       margin-top: 0; font-size: 1.5em; color: var(--primary-color);
       border-bottom: 2px solid var(--light-gray); padding-bottom: 10px; margin-bottom: 20px;
     }
-    #tabla-principal-wrapper {
+    #tabla-principal-wrapper, #tabla-metricas-wrapper {
       max-height: 500px; overflow-y: auto;
       border: 1px solid var(--medium-gray); border-radius: var(--border-radius);
     }
@@ -122,6 +122,7 @@
   <div class="tab-nav">
     <button class="tab-link active" data-tab="pedido"><i class="material-icons">list_alt</i>Pedido Principal</button>
     <button class="tab-link" data-tab="extra"><i class="material-icons">add_shopping_cart</i>Stock Extra</button>
+    <button class="tab-link" data-tab="metricas"><i class="material-icons">history</i>Métricas</button>
   </div>
 
   <div id="pedido" class="tab-content active">
@@ -151,6 +152,30 @@
       <table id="tabla-stock-extra" class="styled-table">
         <tbody></tbody>
       </table>
+    </div>
+  </div>
+
+  <div id="metricas" class="tab-content">
+    <div class="card">
+      <h2>Registros Guardados en Google Sheets</h2>
+      <button class="btn btn-secondary" id="cargar-metricas" style="margin-bottom: 20px;"><i class="material-icons">refresh</i>Cargar Registros</button>
+      <div id="tabla-metricas-wrapper">
+        <table id="tabla-metricas" class="styled-table">
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Artículo</th>
+              <th>Stock</th>
+              <th>Pedido</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td colspan="4" style="text-align:center;">Haz clic en "Cargar Registros" para ver los datos.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 
@@ -352,29 +377,68 @@
         try {
             const response = await fetch(url, {
                 method: 'POST',
-                mode: 'no-cors', // Required to avoid CORS errors with simple Apps Script POSTs
+                mode: 'no-cors', 
                 headers: {
-                  // The Content-Type header is not strictly necessary for 'no-cors'
-                  // but it's good practice. The Apps Script will receive it as text/plain.
                   'Content-Type': 'text/plain;charset=utf-8',
                 },
-                // The body is the raw JSON string
                 body: JSON.stringify(datosPedidoActual)
             });
-            
-            // 'no-cors' prevents reading the response, so we can't confirm success here.
-            // We have to assume it worked and let the user check the sheet.
-            alert('Datos enviados a Google Sheets. Por favor, verifica la hoja de cálculo para confirmar que se guardaron correctamente.');
-
+            alert('Datos enviados a Google Sheets. Por favor, verifica la hoja de cálculo para confirmar.');
         } catch (error) {
             console.error('Error al enviar los datos:', error);
-            alert('Hubo un error al enviar los datos. Revisa la consola del navegador (F12) para ver los detalles del error.');
+            alert('Hubo un error al enviar los datos. Revisa la consola del navegador (F12) para ver los detalles.');
         } finally {
             btn.disabled = false;
             btn.innerHTML = '<i class="material-icons">cloud_upload</i> Guardar en Sheets';
         }
     }
 
+    async function cargarMetricas() {
+      const url = "https://script.google.com/macros/s/AKfycbxanz_WVCdDGmBc-8melWhb40yhbcDoYr7QtyPRhD-WqlPOVisrG2DKiU8kzPcnmPs/exec";
+      const btn = document.getElementById('cargar-metricas');
+      const tablaMetricasTbody = document.getElementById('tabla-metricas').querySelector('tbody');
+      
+      btn.disabled = true;
+      btn.innerHTML = '<i class="material-icons">hourglass_top</i> Cargando...';
+      tablaMetricasTbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Cargando datos...</td></tr>';
+
+      try {
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`Error en la respuesta de la red: ${response.statusText}`);
+        }
+        const data = await response.json();
+
+        if (data.status === 'error') {
+          throw new Error(data.message);
+        }
+
+        tablaMetricasTbody.innerHTML = ''; // Limpiar la tabla
+
+        if (Array.isArray(data) && data.length > 0) {
+          // Invertir los datos para mostrar los más recientes primero
+          data.reverse().forEach(registro => {
+            const fila = document.createElement('tr');
+            fila.innerHTML = `
+              <td>${registro.Fecha || 'N/A'}</td>
+              <td>${registro.Artículo || 'N/A'}</td>
+              <td>${registro.Stock || '0'}</td>
+              <td>${registro.Pedido || '0'}</td>
+            `;
+            tablaMetricasTbody.appendChild(fila);
+          });
+        } else {
+          tablaMetricasTbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No se encontraron registros.</td></tr>';
+        }
+
+      } catch (error) {
+        console.error('Error al cargar las métricas:', error);
+        tablaMetricasTbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">Error al cargar los datos: ${error.message}</td></tr>`;
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="material-icons">refresh</i> Cargar Registros';
+      }
+    }
 
     window.addEventListener('load', () => {
       setupTabs();
@@ -383,6 +447,7 @@
 
       document.getElementById('guardar-en-sheets').addEventListener('click', enviarDatosAGoogleSheets);
       document.getElementById('borrar-datos').addEventListener('click', borrarDatos);
+      document.getElementById('cargar-metricas').addEventListener('click', cargarMetricas);
       btnAgregarArticulo.addEventListener('click', agregarArticuloExtra);
       inputNuevoArticulo.addEventListener('keypress', (event) => {
         if (event.key === 'Enter') { event.preventDefault(); agregarArticuloExtra(); }
