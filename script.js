@@ -51,7 +51,9 @@
             const celdaDia = document.createElement('div');
             celdaDia.classList.add('dia');
             celdaDia.textContent = dia;
-            const fechaCompleta = new Date(year, month, dia + 1).toISOString().split('T')[0];
+            const monthStr = String(month + 1).padStart(2, '0');
+            const dayStr = String(dia).padStart(2, '0');
+            const fechaCompleta = `${year}-${monthStr}-${dayStr}`;
             celdaDia.dataset.fecha = fechaCompleta;
 
             if (fechasConDatos.has(fechaCompleta)) {
