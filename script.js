@@ -51,9 +51,13 @@
             const celdaDia = document.createElement('div');
             celdaDia.classList.add('dia');
             celdaDia.textContent = dia;
+            
+            // --- LA LÍNEA CORREGIDA ---
             const monthStr = String(month + 1).padStart(2, '0');
             const dayStr = String(dia).padStart(2, '0');
             const fechaCompleta = `${year}-${monthStr}-${dayStr}`;
+            // --- FIN DE LA CORRECCIÓN ---
+
             celdaDia.dataset.fecha = fechaCompleta;
 
             if (fechasConDatos.has(fechaCompleta)) {
