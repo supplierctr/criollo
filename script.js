@@ -93,7 +93,43 @@
     }
 
     // --- Lógica de Red (Fetch) ---
-    async function enviarDatosAGoogleSheets() { const url = "https://script.google.com/macros/s/AKfycbxanz_WVCdDGmBc-8melWhb40yhbcDoYr7QtyPRhD-WqlPOVisrG2DKiU8kzPcnmPs/exec"; const btn = document.getElementById('guardar-en-sheets'); btn.disabled = true; btn.innerHTML = '<i class="material-icons">hourglass_top</i> Guardando...'; try { await fetch(url, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8', }, body: JSON.stringify(datosPedidoActual) }); alert('Datos enviados a Google Sheets. Por favor, verifica la hoja de cálculo para confirmar.'); } catch (error) { console.error('Error al enviar los datos:', error); alert('Hubo un error al enviar los datos. Revisa la consola del navegador (F12) para ver los detalles.'); } finally { btn.disabled = false; btn.innerHTML = '<i class="material-icons">cloud_upload</i> Guardar en Sheets'; } }
+    async function enviarDatosAGoogleSheets() { 
+        const url = "https://script.google.com/macros/s/AKfycbxanz_WVCdDGmBc-8melWhb40yhbcDoYr7QtyPRhD-WqlPOVisrG2DKiU8kzPcnmPs/exec";
+        const btn = document.getElementById('guardar-en-sheets');
+        
+        // --- NUEVA LÓGICA PARA RELLENAR CEROS ---
+        const datosParaEnviar = {
+            regular: datosPedidoActual.regular.map(item => ({
+                ...item,
+                stock: item.stock || '0',
+                pedido: item.pedido || '0'
+            })),
+            extra: datosPedidoActual.extra.map(item => ({
+                ...item,
+                stock: item.stock || '0',
+                pedido: item.pedido || '0'
+            }))
+        };
+        // --- FIN DE LA NUEVA LÓGICA ---
+
+        btn.disabled = true; 
+        btn.innerHTML = '<i class="material-icons">hourglass_top</i> Guardando...'; 
+        try { 
+            await fetch(url, { 
+                method: 'POST', 
+                mode: 'no-cors', 
+                headers: { 'Content-Type': 'text/plain;charset=utf-8', }, 
+                body: JSON.stringify(datosParaEnviar) // Usamos el nuevo objeto
+            }); 
+            alert('Datos enviados a Google Sheets. Por favor, verifica la hoja de cálculo para confirmar.'); 
+        } catch (error) { 
+            console.error('Error al enviar los datos:', error); 
+            alert('Hubo un error al enviar los datos. Revisa la consola del navegador (F12) para ver los detalles.'); 
+        } finally { 
+            btn.disabled = false; 
+            btn.innerHTML = '<i class="material-icons">cloud_upload</i> Guardar en Sheets'; 
+        } 
+    }
     async function cargarMetricas() {
         const url = "https://script.google.com/macros/s/AKfycbxanz_WVCdDGmBc-8melWhb40yhbcDoYr7QtyPRhD-WqlPOVisrG2DKiU8kzPcnmPs/exec";
         const btn = document.getElementById('cargar-metricas');
