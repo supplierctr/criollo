@@ -111,7 +111,32 @@
             registrosCargados = data;
             document.getElementById('calendario-container').style.display = 'block';
             generarCalendario();
-            tablaMetricasTbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">Selecciona un día del calendario.</td></tr>';
+            
+            // --- INICIO DE LA MODIFICACIÓN PARA DEPURAR ---
+            const tablaMetricasTbody = document.getElementById('tabla-metricas').querySelector('tbody');
+            const titulo = document.getElementById('registros-titulo');
+            titulo.textContent = "Todos los Registros Cargados";
+            tablaMetricasTbody.innerHTML = ''; // Limpiar la tabla
+
+            if (Array.isArray(data) && data.length > 0) {
+              // Invertir los datos para mostrar los más recientes primero
+              data.slice().reverse().forEach(registro => {
+                const fila = document.createElement('tr');
+                fila.innerHTML = `
+                  <td>${registro.Artículo || 'N/A'}</td>
+                  <td>${registro.Stock || '0'}</td>
+                  <td>${registro.Pedido || '0'}</td>
+                `;
+                // Añadimos la fecha al principio de la fila para que sea visible
+                const celdaFecha = document.createElement('td');
+                celdaFecha.textContent = registro.Fecha || 'N/A';
+                fila.prepend(celdaFecha);
+                tablaMetricasTbody.appendChild(fila);
+              });
+            } else {
+              tablaMetricasTbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No se encontraron registros en la hoja de cálculo.</td></tr>';
+            }
+            // --- FIN DE LA MODIFICACIÓN PARA DEPURAR ---
 
         } catch (error) {
             console.error('Error al cargar las métricas:', error);
