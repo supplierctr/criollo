@@ -25,7 +25,14 @@
     <button class="tab-link" data-tab="metricas"><i class="material-icons">history</i>Métricas</button>
   </div>
 
-  <div id="pedido" class="tab-content active"><div class="card"><div id="tabla-principal-wrapper"><table id="tabla-principal" class="styled-table"><thead><tr><th style="width: 90px;">Stock</th><th style="width: 90px;">Pedido</th><th>Artículo</th></tr></thead><tbody></tbody></table></div></div></div>
+  <div id="pedido" class="tab-content active">
+    <div class="card">
+      <button class="btn btn-info" id="cargar-stock-hoy" style="margin-bottom: 20px;"><i class="material-icons">today</i>Cargar Stock de Hoy</button>
+      <div id="tabla-principal-wrapper">
+        <table id="tabla-principal" class="styled-table"><thead><tr><th style="width: 90px;">Stock</th><th style="width: 90px;">Pedido</th><th>Artículo</th></tr></thead><tbody></tbody></table>
+      </div>
+    </div>
+  </div>
   <div id="extra" class="tab-content"><div class="card"><h2>Añadir Stock Extra</h2><div id="agregar-extra-form"><input type="text" id="nuevo-articulo-extra" placeholder="Nombre del nuevo artículo"><button id="agregar-articulo-extra" class="btn btn-secondary"><i class="material-icons">add</i>Agregar</button></div><table id="tabla-stock-extra" class="styled-table"><tbody></tbody></table></div></div>
   
   <div id="metricas" class="tab-content">

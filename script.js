@@ -94,68 +94,92 @@
 
     // --- Lógica de Red (Fetch) ---
     async function enviarDatosAGoogleSheets() { 
-        const url = "https://script.google.com/macros/s/AKfycbxanz_WVCdDGmBc-8melWhb40yhbcDoYr7QtyPRhD-WqlPOVisrG2DKiU8kzPcnmPs/exec";
-        const btn = document.getElementById('guardar-en-sheets');
         const restaurante = document.getElementById('restaurante-selector').value;
+        const url = `https://script.google.com/macros/s/AKfycbxanz_WVCdDGmBc-8melWhb40yhbcDoYr7QtyPRhD-WqlPOVisrG2DKiU8kzPcnmPs/exec?restaurante=${restaurante}`;
+        const btn = document.getElementById('guardar-en-sheets');
         
-        const datosParaEnviar = {
-            regular: datosPedidoActual.regular.map(item => ({ ...item, stock: item.stock || '0', pedido: item.pedido || '0' })),
-            extra: datosPedidoActual.extra.map(item => ({ ...item, stock: item.stock || '0', pedido: item.pedido || '0' }))
-        };
+        // Primero, verificamos si ya hay datos para hoy
+        try {
+            const response = await fetch(url);
+            const registrosActuales = await response.json();
+            const fechaDeHoy = new Date().toISOString().split('T')[0];
+            const registrosDeHoy = registrosActuales.filter(r => r.Fecha === fechaDeHoy);
 
-        const postData = {
-            restaurante: restaurante,
-            datos: datosParaEnviar
-        };
+            let sobrescribir = false;
+            if (registrosDeHoy.length > 0) {
+                if (!confirm("Ya existen registros para el día de hoy. ¿Desea sobrescribirlos?")) {
+                    return; // El usuario canceló la operación
+                }
+                sobrescribir = true;
+            }
 
-        btn.disabled = true; 
-        btn.innerHTML = '<i class="material-icons">hourglass_top</i> Guardando...'; 
-        try { 
-            await fetch(url, { 
+            // Ahora, procedemos a guardar los datos
+            const datosParaEnviar = {
+                regular: datosPedidoActual.regular.map(item => ({ ...item, stock: item.stock || '0', pedido: item.pedido || '0' })),
+                extra: datosPedidoActual.extra.map(item => ({ ...item, stock: item.stock || '0', pedido: item.pedido || '0' }))
+            };
+
+            const postData = {
+                restaurante: restaurante,
+                datos: datosParaEnviar,
+                sobrescribir: sobrescribir
+            };
+
+            btn.disabled = true; 
+            btn.innerHTML = '<i class="material-icons">hourglass_top</i> Guardando...'; 
+            
+            await fetch("https://script.google.com/macros/s/AKfycbxanz_WVCdDGmBc-8melWhb40yhbcDoYr7QtyPRhD-WqlPOVisrG2DKiU8kzPcnmPs/exec", { 
                 method: 'POST', 
                 mode: 'no-cors', 
                 headers: { 'Content-Type': 'text/plain;charset=utf-8', }, 
-                body: JSON.stringify(postData) // Enviamos el objeto completo
+                body: JSON.stringify(postData)
             }); 
-            alert(`Datos enviados a Google Sheets para ${restaurante}.`); 
-        } catch (error) { 
-            console.error('Error al enviar los datos:', error); 
-            alert('Hubo un error al enviar los datos. Revisa la consola del navegador (F12) para ver los detalles.'); 
-        } finally { 
-            btn.disabled = false; 
-            btn.innerHTML = '<i class="material-icons">cloud_upload</i> Guardar en Sheets'; 
-        } 
+            alert(`Datos guardados en Google Sheets para ${restaurante}.`); 
+
+        } catch (error) {
+            console.error('Error al enviar los datos:', error);
+            alert('Hubo un error al enviar los datos. Revisa la consola del navegador (F12) para ver los detalles.');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="material-icons">cloud_upload</i> Guardar en Sheets';
+        }
     }
 
-    async function cargarMetricas() {
+    async function cargarStockDeHoy() {
         const restaurante = document.getElementById('restaurante-selector').value;
         const url = `https://script.google.com/macros/s/AKfycbxanz_WVCdDGmBc-8melWhb40yhbcDoYr7QtyPRhD-WqlPOVisrG2DKiU8kzPcnmPs/exec?restaurante=${restaurante}`;
-        const btn = document.getElementById('cargar-metricas');
-        const tablaMetricasTbody = document.getElementById('tabla-metricas').querySelector('tbody');
-        
+        const btn = document.getElementById('cargar-stock-hoy');
         btn.disabled = true;
         btn.innerHTML = '<i class="material-icons">hourglass_top</i> Cargando...';
-        tablaMetricasTbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">Cargando datos...</td></tr>';
 
         try {
             const response = await fetch(url);
-            if (!response.ok) throw new Error(`Error en la respuesta de la red: ${response.statusText}`);
             const data = await response.json();
-            if (data.status === 'error') throw new Error(data.message);
-            
-            registrosCargados = data;
-            document.getElementById('calendario-container').style.display = 'block';
-            generarCalendario();
-            tablaMetricasTbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">Selecciona un día del calendario para ver sus registros.</td></tr>';
+            const fechaDeHoy = new Date().toISOString().split('T')[0];
+            const registrosDeHoy = data.filter(r => r.Fecha === fechaDeHoy);
 
+            if (registrosDeHoy.length > 0) {
+                registrosDeHoy.forEach(registro => {
+                    const inputStock = tablaPrincipalTbody.querySelector(`tr[data-articulo="${registro.Artículo}"] .input-stock`);
+                    if (inputStock) {
+                        inputStock.value = registro.Stock;
+                        actualizarDatoEnMemoria(registro.Artículo, 'stock', registro.Stock);
+                    }
+                });
+                alert("Stock de hoy cargado correctamente.");
+            } else {
+                alert("No se han guardado datos el día de hoy.");
+            }
         } catch (error) {
-            console.error('Error al cargar las métricas:', error);
-            tablaMetricasTbody.innerHTML = `<tr><td colspan="3" style="text-align:center;">Error al cargar los datos: ${error.message}</td></tr>`;
+            console.error("Error al cargar el stock de hoy:", error);
+            alert("No se pudo cargar el stock de hoy.");
         } finally {
             btn.disabled = false;
-            btn.innerHTML = '<i class="material-icons">refresh</i> Cargar Todos los Registros';
+            btn.innerHTML = '<i class="material-icons">today</i> Cargar Stock de Hoy';
         }
     }
+
+    async function cargarMetricas() {
 
     // --- Inicialización ---
     window.addEventListener('load', () => {
