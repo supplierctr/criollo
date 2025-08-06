@@ -93,27 +93,34 @@
     }
 
     // --- Lógica de Red (Fetch) ---
+    function getFechaLocalYYYYMMDD() {
+        const ahora = new Date();
+        const anio = ahora.getFullYear();
+        const mes = String(ahora.getMonth() + 1).padStart(2, '0');
+        const dia = String(ahora.getDate()).padStart(2, '0');
+        return `${anio}-${mes}-${dia}`;
+    }
+
     async function enviarDatosAGoogleSheets() { 
         const restaurante = document.getElementById('restaurante-selector').value;
         const url = `https://script.google.com/macros/s/AKfycbxanz_WVCdDGmBc-8melWhb40yhbcDoYr7QtyPRhD-WqlPOVisrG2DKiU8kzPcnmPs/exec?restaurante=${restaurante}`;
         const btn = document.getElementById('guardar-en-sheets');
         
-        // Primero, verificamos si ya hay datos para hoy
         try {
             const response = await fetch(url);
+            if (!response.ok) throw new Error('No se pudo verificar el estado del servidor.');
             const registrosActuales = await response.json();
-            const fechaDeHoy = new Date().toISOString().split('T')[0];
+            const fechaDeHoy = getFechaLocalYYYYMMDD();
             const registrosDeHoy = registrosActuales.filter(r => r.Fecha === fechaDeHoy);
 
             let sobrescribir = false;
             if (registrosDeHoy.length > 0) {
                 if (!confirm("Ya existen registros para el día de hoy. ¿Desea sobrescribirlos?")) {
-                    return; // El usuario canceló la operación
+                    return;
                 }
                 sobrescribir = true;
             }
 
-            // Ahora, procedemos a guardar los datos
             const datosParaEnviar = {
                 regular: datosPedidoActual.regular.map(item => ({ ...item, stock: item.stock || '0', pedido: item.pedido || '0' })),
                 extra: datosPedidoActual.extra.map(item => ({ ...item, stock: item.stock || '0', pedido: item.pedido || '0' }))
@@ -154,13 +161,15 @@
 
         try {
             const response = await fetch(url);
+            if (!response.ok) throw new Error('No se pudo conectar con el servidor.');
             const data = await response.json();
-            const fechaDeHoy = new Date().toISOString().split('T')[0];
+            const fechaDeHoy = getFechaLocalYYYYMMDD();
             const registrosDeHoy = data.filter(r => r.Fecha === fechaDeHoy);
 
             if (registrosDeHoy.length > 0) {
                 registrosDeHoy.forEach(registro => {
-                    const inputStock = tablaPrincipalTbody.querySelector(`tr[data-articulo="${registro.Artículo}"] .input-stock`);
+                    const selector = `tr[data-articulo="${registro.Artículo.replace(/"/g, '\"')}"] .input-stock`;
+                    const inputStock = tablaPrincipalTbody.querySelector(selector);
                     if (inputStock) {
                         inputStock.value = registro.Stock;
                         actualizarDatoEnMemoria(registro.Artículo, 'stock', registro.Stock);
