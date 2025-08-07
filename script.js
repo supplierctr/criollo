@@ -2,10 +2,7 @@
 const articulos = ["ACEITE DE GIRASOL ALSAMAR FREIDORA", "ACEITE DE OLIVA (SALON)", "BIDON DE ACEITE OLIVA", "VINAGRE DE VINO", "VINAGRE DE ALCOHOL", "ACEITUNA VERDE SIN CAROZO", "ACEITUNA NEGRA SIN CAROZO", "ACETO BALSAMICO", "ALCAPARRA", "ALMENDRA", "NUECES", "ALMIDON DE MAIZ", "ANCHOA EN ACEITE", "ARROZ CARNAROLI", "ARROZ GALLO", "ARVEJA CONGELADA", "ATUN AL NATURAL LOMO", "AVELLANA CON CASCARA", "HARINA 0000 DE FUERZA CENTRAL NORTE", "KETCHUP EN SOBRE", "KETCHUP SACHE", "MAYONESA EN SOBRE HELLMANS", "MAYONESA SACHE HELLMANS", "MOSTAZA EN SOBRE", "MOSTAZA SACHE", "MOSTAZA ANTIGUA DIJON", "ACEITE DE OLIVA PARA DELY", "VINAGRE EN SOBRE", "QUESO DELY", "SAL SOBRE DELY", "MIEL", "PALMITO", "PAN RALLADO PREFERIDO", "REBOZADOR PREFERIDO", "SALSA TABASCO", "SEMILLA DE SESAMO", "SEMOLIN", "CALDO DE VERDURA", "CALDO DE POLLO", "DEMIGLASE", "FUMET", "HUMO LIQUIDO", "COMINO MOLIDO", "CURCUMA", "OREGANO DESHIDRATADO", "PAPRIKA", "PIMENTON", "PIMIENTA CALLENA MOLIDA", "TOMATE SECO", "SALSA GOLF", "SALSA SOJA", "TE", "MATE COCIDO", "TE NEGRO", "TE DIGESTIVO", "PIMIENTA NEGRA EN GRANOS", "CREMA DE LECHE MILKAUT 44°", "LECHE ENTERA VERONICA", "LECHE DESCREMADA VERONICA", "QUESO CREMA MILKAUT", "QUESO AZUL", "QUESO FRESCO LA PAULINA", "QUESO SARDO", "QUESO DE MAQUINA TYBO", "RICOTA", "JAMON COCIDO CAMPO AUSTRAL", "LEVADURA FRESCA", "MANTECA PILON", "AZUCAR LEDESMA", "AZUCAR NEGRA", "CAFÉ INSTANTANEO", "JUGO EN SOBRE", "AZUCAR EN SOBRE LAVAZZA", "EDULCORANTE LAVAZZA", "CAFE LAVAZZA/MOKA PACK", "VINO TINTO ARIZU", "VINO BLANCO ARIZU", "CHOCLO CONGELADO", "BROCOLI CONGELADO", "ESPINACA CONGELADA", "CHAUCHA CONGELADA", "AJI EN VINAGRE", "SAL FINA", "SAL PARRILLA", "DULCE DE LECHE RESPOSTERO", "FRUTOS ROJOS CONGELADOS", "CANELA EN POLVO", "AZUCAR IMPALPABLE", "CHOCOLATE AMARGO AGUILA", "CACAO EN POLVO", "ADOBO PARA PIZZA", "MINERVA (JUGO DE LIMON)", "PURE DE TOMATE TRITURADO", "PURE DE TOMATE PERITA", "CHEDDAR LIQUIDO", "CHEDDAR EN FETAS", "CANTIMPALO", "JAMON CRUDO", "FIDEOS TURABUZON", "FIDEOS PENNE RIGETE", "FIDEOS TALLARINES", "HARINA LEUDANTE", "ESENCIA DE VAINILLA", "NUEZ MOSCADA", "MEMBRILLO", "BATATA", "MUZZARELLA", "RON", "WHISKY", "VINO MARSALA"];
 const tablaPrincipalWrapper = document.getElementById('tabla-principal-wrapper');
 const tablaPrincipalTbody = document.getElementById('tabla-principal').querySelector('tbody');
-const tablaStockExtraTbody = document.getElementById('tabla-stock-extra').querySelector('tbody');
-const inputNuevoArticulo = document.getElementById('nuevo-articulo-extra');
-const btnAgregarArticulo = document.getElementById('agregar-articulo-extra');
-let datosPedidoActual = { regular: [], extra: [] };
+let datosPedidoActual = { regular: [] };
 const elementosPorLote = 25;
 let indiceUltimoElementoMostrado = 0;
 let cargandoMas = false;
@@ -16,13 +13,10 @@ let fechaCalendarioActual = new Date();
 function setupTabs() { const tabLinks = document.querySelectorAll('.tab-link'); const tabContents = document.querySelectorAll('.tab-content'); tabLinks.forEach(link => { link.addEventListener('click', () => { const tabId = link.dataset.tab; tabLinks.forEach(innerLink => innerLink.classList.remove('active')); tabContents.forEach(content => content.classList.remove('active')); link.classList.add('active'); document.getElementById(tabId).classList.add('active'); }); }); }
 function renderizarLoteArticulos() { if (indiceUltimoElementoMostrado >= articulos.length) return; const fin = Math.min(indiceUltimoElementoMostrado + elementosPorLote, articulos.length); const articulosLote = articulos.slice(indiceUltimoElementoMostrado, fin); const datosRegularesActuales = datosPedidoActual.regular || []; const fragmento = document.createDocumentFragment(); articulosLote.forEach(articulo => { const datoGuardado = datosRegularesActuales.find(d => d.articulo === articulo); const stockVal = datoGuardado ? datoGuardado.stock : ''; const pedidoVal = datoGuardado ? datoGuardado.pedido : ''; const fila = document.createElement('tr'); fila.dataset.articulo = articulo; fila.innerHTML = `<td data-label="Stock"><input type="number" min="0" step="any" class="input-stock" value="${stockVal}" title="Stock ${articulo}"></td><td data-label="Pedido"><input type="number" min="0" step="any" class="input-pedido" value="${pedidoVal}" title="Pedido ${articulo}"></td><td data-label="Artículo" class="nombre-articulo">${articulo}</td>`; fragmento.appendChild(fila); }); tablaPrincipalTbody.appendChild(fragmento); indiceUltimoElementoMostrado = fin; }
 function generarTablaInicial() { tablaPrincipalTbody.innerHTML = ''; indiceUltimoElementoMostrado = 0; renderizarLoteArticulos(); tablaPrincipalWrapper.scrollTop = 0; }
-function generarFilaExtra(nombreArticulo, stockVal = '', pedidoVal = '') { const fila = document.createElement('tr'); fila.dataset.articulo = nombreArticulo; fila.innerHTML = `<td><input type="number" min="0" step="any" class="input-stock" placeholder="Stock" value="${stockVal}" title="Stock ${nombreArticulo}"></td><td><input type="number" min="0" step="any" class="input-pedido" placeholder="Pedido" value="${pedidoVal}" title="Pedido ${nombreArticulo}"></td><td><span class="nombre-articulo-extra" title="${nombreArticulo}">${nombreArticulo}</span></td><td><button class="btn btn-danger eliminar-extra" title="Eliminar artículo ${nombreArticulo}"><i class="material-icons">delete</i></button></td>`; fila.querySelector('.eliminar-extra').addEventListener('click', eliminarArticuloExtra); return fila; }
 
 // --- Lógica de Datos Locales ---
-function actualizarDatoEnMemoria(articuloNombre, tipo, valor) { const esExtra = !articulos.includes(articuloNombre); let listaDatos = esExtra ? datosPedidoActual.extra : datosPedidoActual.regular; let datoExistente = listaDatos.find(d => d.articulo === articuloNombre); if (datoExistente) { datoExistente[tipo] = valor; } else { const nuevoDato = { articulo: articuloNombre }; nuevoDato[tipo] = valor; nuevoDato[tipo === 'stock' ? 'pedido' : 'stock'] = ''; listaDatos.push(nuevoDato); } }
-function borrarDatos() { if (!confirm("¿Estás seguro de borrar los datos del pedido actual?")) return; datosPedidoActual = { regular: [], extra: [] }; generarTablaInicial(); tablaStockExtraTbody.innerHTML = ''; }
-function agregarArticuloExtra() { const nombreNuevo = inputNuevoArticulo.value.trim(); if (nombreNuevo) { const existe = datosPedidoActual.extra.some(d => d.articulo.toLowerCase() === nombreNuevo.toLowerCase()); if (existe) { alert(`El artículo "${nombreNuevo}" ya existe en Stock Extra.`); return; } datosPedidoActual.extra.push({ articulo: nombreNuevo, stock: '', pedido: '' }); const nuevaFila = generarFilaExtra(nombreNuevo); tablaStockExtraTbody.appendChild(nuevaFila); inputNuevoArticulo.value = ''; } else { alert("Introduce un nombre para el artículo extra."); } }
-function eliminarArticuloExtra(event) { const filaParaEliminar = event.target.closest('tr'); if (filaParaEliminar) { const nombreArticulo = filaParaEliminar.dataset.articulo; datosPedidoActual.extra = datosPedidoActual.extra.filter(d => d.articulo !== nombreArticulo); filaParaEliminar.remove(); } }
+function actualizarDatoEnMemoria(articuloNombre, tipo, valor) { let listaDatos = datosPedidoActual.regular; let datoExistente = listaDatos.find(d => d.articulo === articuloNombre); if (datoExistente) { datoExistente[tipo] = valor; } else { const nuevoDato = { articulo: articuloNombre }; nuevoDato[tipo] = valor; nuevoDato[tipo === 'stock' ? 'pedido' : 'stock'] = ''; listaDatos.push(nuevoDato); } }
+function borrarDatos() { if (!confirm("¿Estás seguro de borrar los datos del pedido actual?")) return; datosPedidoActual = { regular: [] }; generarTablaInicial(); }
 
 // --- Lógica de Calendario y Métricas ---
 function generarCalendario() { const calendarioGrid = document.getElementById('calendario-grid'); const mesAnioActualSpan = document.getElementById('mes-anio-actual'); calendarioGrid.innerHTML = ''; const year = fechaCalendarioActual.getFullYear(); const month = fechaCalendarioActual.getMonth(); const primerDiaDelMes = new Date(year, month, 1); const ultimoDiaDelMes = new Date(year, month + 1, 0); const diasEnMes = ultimoDiaDelMes.getDate(); const diaSemanaPrimerDia = (primerDiaDelMes.getDay() + 6) % 7; mesAnioActualSpan.textContent = primerDiaDelMes.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' }); const diasSemana = ['L', 'M', 'X', 'J', 'V', 'S', 'D']; diasSemana.forEach(dia => { const celdaDiaSemana = document.createElement('div'); celdaDiaSemana.classList.add('dia-semana'); celdaDiaSemana.textContent = dia; calendarioGrid.appendChild(celdaDiaSemana); }); for (let i = 0; i < diaSemanaPrimerDia; i++) { const diaVacio = document.createElement('div'); diaVacio.classList.add('dia', 'vacio'); calendarioGrid.appendChild(diaVacio); } const fechasConDatos = new Set(registrosCargados.map(r => r.Fecha)); for (let dia = 1; dia <= diasEnMes; dia++) { const celdaDia = document.createElement('div'); celdaDia.classList.add('dia'); celdaDia.textContent = dia; const monthStr = String(month + 1).padStart(2, '0'); const dayStr = String(dia).padStart(2, '0'); const fechaCompleta = `${year}-${monthStr}-${dayStr}`; celdaDia.dataset.fecha = fechaCompleta; if (fechasConDatos.has(fechaCompleta)) { celdaDia.classList.add('tiene-datos'); celdaDia.title = `Ver datos del ${new Date(fechaCompleta + 'T00:00:00').toLocaleDateString('es-ES')}`;
@@ -49,7 +43,7 @@ async function enviarDatosAGoogleSheets() {
             }
             sobrescribir = true;
         }
-        const datosParaEnviar = { regular: datosPedidoActual.regular.map(item => ({ ...item, stock: item.stock || '0', pedido: item.pedido || '0' })), extra: datosPedidoActual.extra.map(item => ({ ...item, stock: item.stock || '0', pedido: item.pedido || '0' })) };
+        const datosParaEnviar = { regular: datosPedidoActual.regular.map(item => ({ ...item, stock: item.stock || '0', pedido: item.pedido || '0' })) };
         const postData = { restaurante: restaurante, datos: datosParaEnviar, sobrescribir: sobrescribir };
         btn.disabled = true;
         btn.innerHTML = '<i class="material-icons">hourglass_top</i> Guardando...';
@@ -64,7 +58,7 @@ async function enviarDatosAGoogleSheets() {
     }
 }
 
-async function cargarPedidoDeHoy() {
+async function cargarUltimoPedidoGuardado() {
     const restaurante = document.getElementById('restaurante-selector').value;
     const url = `https://script.google.com/macros/s/AKfycbxanz_WVCdDGmBc-8melWhb40yhbcDoYr7QtyPRhD-WqlPOVisrG2DKiU8kzPcnmPs/exec?restaurante=${restaurante}`;
     const btn = document.getElementById('cargar-pedido-hoy');
@@ -74,35 +68,41 @@ async function cargarPedidoDeHoy() {
         const response = await fetch(url);
         if (!response.ok) throw new Error('No se pudo conectar con el servidor.');
         const data = await response.json();
-        const fechaDeHoy = getFechaLocalYYYYMMDD();
-        const registrosDeHoy = data.filter(r => r.Fecha === fechaDeHoy);
-        if (registrosDeHoy.length > 0) {
-            if (!confirm("Esto reemplazará tu pedido actual en pantalla. ¿Continuar?")) return;
-            datosPedidoActual = { regular: [], extra: [] };
-            tablaStockExtraTbody.innerHTML = '';
-            registrosDeHoy.forEach(registro => {
-                const esExtra = registro.Artículo.startsWith('[Extra]');
-                const nombreArticulo = esExtra ? registro.Artículo.substring(8) : registro.Artículo;
-                const dato = { articulo: nombreArticulo, stock: registro.Stock, pedido: registro.Pedido };
-                if (esExtra) {
-                    datosPedidoActual.extra.push(dato);
-                    const nuevaFila = generarFilaExtra(dato.articulo, dato.stock, dato.pedido);
-                    tablaStockExtraTbody.appendChild(nuevaFila);
-                } else {
-                    datosPedidoActual.regular.push(dato);
-                }
+
+        // Find the latest date
+        let latestDate = null;
+        if (data.length > 0) {
+            const dates = data.map(item => new Date(item.Fecha));
+            latestDate = new Date(Math.max(...dates));
+        }
+
+        if (latestDate) {
+            const formattedDate = latestDate.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            if (!confirm(`Esto reemplazará tu pedido actual en pantalla con el pedido del ${formattedDate}. ¿Continuar?`)) {
+                btn.innerHTML = `<i class="material-icons">today</i> Cargar Pedido (${formattedDate})`;
+                return;
+            }
+
+            datosPedidoActual = { regular: [] };
+            const latestRecords = data.filter(r => new Date(r.Fecha).toDateString() === latestDate.toDateString());
+
+            latestRecords.forEach(registro => {
+                const dato = { articulo: registro.Artículo, stock: registro.Stock, pedido: registro.Pedido };
+                datosPedidoActual.regular.push(dato);
             });
             generarTablaInicial();
-            alert("Pedido de hoy cargado correctamente.");
+            alert(`Pedido del ${formattedDate} cargado correctamente.`);
+            btn.innerHTML = `<i class="material-icons">today</i> Cargar Pedido (${formattedDate})`;
         } else {
-            alert("No se han guardado datos el día de hoy.");
+            alert("No se han guardado datos previamente.");
+            btn.innerHTML = '<i class="material-icons">today</i> Cargar Pedido de Hoy';
         }
     } catch (error) {
-        console.error("Error al cargar el pedido de hoy:", error);
-        alert("No se pudo cargar el pedido de hoy.");
+        console.error("Error al cargar el último pedido guardado:", error);
+        alert("No se pudo cargar el último pedido guardado.");
+        btn.innerHTML = '<i class="material-icons">today</i> Cargar Pedido de Hoy';
     } finally {
         btn.disabled = false;
-        btn.innerHTML = '<i class="material-icons">today</i> Cargar Pedido de Hoy';
     }
 }
 
@@ -136,17 +136,30 @@ async function cargarMetricas() {
 window.addEventListener('load', () => {
   setupTabs();
   generarTablaInicial();
-  // Eventos de la tabla principal y extra
+  // Eventos de la tabla principal
   tablaPrincipalTbody.addEventListener('input', (event) => { if (event.target.matches('.input-stock') || event.target.matches('.input-pedido')) { const fila = event.target.closest('tr'); const articulo = fila.dataset.articulo; const tipo = event.target.classList.contains('input-stock') ? 'stock' : 'pedido'; actualizarDatoEnMemoria(articulo, tipo, event.target.value); } });
-  tablaStockExtraTbody.addEventListener('input', (event) => { if (event.target.matches('.input-stock') || event.target.matches('.input-pedido')) { const fila = event.target.closest('tr'); const articulo = fila.dataset.articulo; const tipo = event.target.classList.contains('input-stock') ? 'stock' : 'pedido'; actualizarDatoEnMemoria(articulo, tipo, event.target.value); } });
   tablaPrincipalWrapper.addEventListener('scroll', () => { if (cargandoMas || indiceUltimoElementoMostrado >= articulos.length) return; if (tablaPrincipalWrapper.scrollTop + tablaPrincipalWrapper.clientHeight >= tablaPrincipalWrapper.scrollHeight - 150) { cargandoMas = true; renderizarLoteArticulos(); setTimeout(() => { cargandoMas = false; }, 100); } });
   // Eventos de los botones
   document.getElementById('guardar-en-sheets').addEventListener('click', enviarDatosAGoogleSheets);
   document.getElementById('borrar-datos').addEventListener('click', borrarDatos);
   document.getElementById('cargar-metricas').addEventListener('click', cargarMetricas);
-  document.getElementById('cargar-pedido-hoy').addEventListener('click', cargarPedidoDeHoy); // <-- ID DEL BOTÓN CAMBIADO
-  btnAgregarArticulo.addEventListener('click', agregarArticuloExtra);
-  inputNuevoArticulo.addEventListener('keypress', (event) => { if (event.key === 'Enter') { event.preventDefault(); agregarArticuloExtra(); } });
+  document.getElementById('cargar-pedido-hoy').addEventListener('click', cargarUltimoPedidoGuardado);
+
+  // Evento para cambiar el color del header según el restaurante
+  const restauranteSelector = document.getElementById('restaurante-selector');
+  const header = document.querySelector('header');
+
+  function actualizarColorHeader() {
+    if (restauranteSelector.value === 'AllBoys') {
+      header.classList.add('allboys-header');
+    } else {
+      header.classList.remove('allboys-header');
+    }
+  }
+
+  restauranteSelector.addEventListener('change', actualizarColorHeader);
+  actualizarColorHeader(); // Llamar al cargar para establecer el color inicial
+
   // Eventos del calendario
   document.getElementById('mes-anterior').addEventListener('click', () => { fechaCalendarioActual.setMonth(fechaCalendarioActual.getMonth() - 1); generarCalendario(); });
   document.getElementById('mes-siguiente').addEventListener('click', () => { fechaCalendarioActual.setMonth(fechaCalendarioActual.getMonth() + 1); generarCalendario(); });

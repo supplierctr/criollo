@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header><h1>Pedido de Criollo</h1></header>
+  <header id="main-header"><h1>Pedido de Criollo</h1></header>
 
   <div class="selector-container">
     <label for="restaurante-selector">Cantina:</label>
@@ -21,19 +21,17 @@
 
   <div class="tab-nav">
     <button class="tab-link active" data-tab="pedido"><i class="material-icons">list_alt</i>Pedido Principal</button>
-    <button class="tab-link" data-tab="extra"><i class="material-icons">add_shopping_cart</i>Stock Extra</button>
     <button class="tab-link" data-tab="metricas"><i class="material-icons">history</i>Métricas</button>
   </div>
 
   <div id="pedido" class="tab-content active">
     <div class="card">
-      <button class="btn btn-info" id="cargar-pedido-hoy" style="margin-bottom: 20px;"><i class="material-icons">today</i>Cargar Pedido de Hoy</button>
+      <button class="btn btn-info" id="cargar-pedido-hoy"><i class="material-icons">today</i>Cargar Pedido</button>
       <div id="tabla-principal-wrapper">
         <table id="tabla-principal" class="styled-table"><thead><tr><th style="width: 90px;">Stock</th><th style="width: 90px;">Pedido</th><th>Artículo</th></tr></thead><tbody></tbody></table>
       </div>
     </div>
   </div>
-  <div id="extra" class="tab-content"><div class="card"><h2>Añadir Stock Extra</h2><div id="agregar-extra-form"><input type="text" id="nuevo-articulo-extra" placeholder="Nombre del nuevo artículo"><button id="agregar-articulo-extra" class="btn btn-secondary"><i class="material-icons">add</i>Agregar</button></div><table id="tabla-stock-extra" class="styled-table"><tbody></tbody></table></div></div>
   
   <div id="metricas" class="tab-content">
     <div class="card">
