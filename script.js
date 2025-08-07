@@ -69,22 +69,27 @@ async function cargarUltimoPedidoGuardado() {
         if (!response.ok) throw new Error('No se pudo conectar con el servidor.');
         const data = await response.json();
 
-        // Find the latest date
-        let latestDate = null;
+        // Find the latest date string directly
+        let latestDateString = null;
         if (data.length > 0) {
-            const dates = data.map(item => new Date(item.Fecha));
-            latestDate = new Date(Math.max(...dates));
+            latestDateString = data.reduce((maxDate, currentItem) => {
+                return currentItem.Fecha > maxDate ? currentItem.Fecha : maxDate;
+            }, data[0].Fecha);
         }
 
-        if (latestDate) {
-            const formattedDate = latestDate.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        if (latestDateString) {
+            // Create a Date object from the string, treating it as a local date
+            const displayDate = new Date(latestDateString + 'T00:00:00');
+            const formattedDate = displayDate.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+
             if (!confirm(`Esto reemplazará tu pedido actual en pantalla con el pedido del ${formattedDate}. ¿Continuar?`)) {
                 btn.innerHTML = `<i class="material-icons">today</i> Cargar Pedido (${formattedDate})`;
                 return;
             }
 
             datosPedidoActual = { regular: [] };
-            const latestRecords = data.filter(r => new Date(r.Fecha).toDateString() === latestDate.toDateString());
+            // Filter records using string comparison for dates
+            const latestRecords = data.filter(r => r.Fecha === latestDateString);
 
             latestRecords.forEach(registro => {
                 const dato = { articulo: registro.Artículo, stock: registro.Stock, pedido: registro.Pedido };
@@ -108,7 +113,11 @@ async function cargarUltimoPedidoGuardado() {
 
 async function cargarMetricas() {
     const restaurante = document.getElementById('restaurante-selector').value;
-    const url = `https://script.google.com/macros/s/AKfycbxanz_WVCdDGmBc-8melWhb40yhbcDoYr7QtyPRhD-WqlPOVisrG2DKiU8kzPcnmPs/exec?restaurante=${restaurante}`;
+    const oneMonthAgo = new Date();
+    oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+    const startDate = oneMonthAgo.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+
+    const url = `https://script.google.com/macros/s/AKfycbxanz_WVCdDGmBc-8melWhb40yhbcDoYr7QtyPRhD-WqlPOVisrG2DKiU8kzPcnmPs/exec?restaurante=${restaurante}&startDate=${startDate}`;
     const btn = document.getElementById('cargar-metricas');
     const tablaMetricasTbody = document.getElementById('tabla-metricas').querySelector('tbody');
     btn.disabled = true;
