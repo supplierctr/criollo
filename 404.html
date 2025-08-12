@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Página no encontrada</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      text-align: center;
+    }
+    .error-container {
+        background-color: white;
+        padding: 40px;
+        border-radius: var(--border-radius);
+        box-shadow: var(--card-shadow);
+    }
+    .error-container h1 {
+        font-size: 6em;
+        margin: 0;
+        color: var(--primary-color);
+    }
+    .error-container p {
+        font-size: 1.5em;
+        margin: 10px 0 30px;
+    }
+  </style>
+</head>
+<body>
+  <header id="main-header" style="position: absolute; top: 0; width: 100%;"><h1>Pedido de Criollo</h1></header>
+  
+  <div class="error-container">
+    <h1>404</h1>
+    <p>Página no encontrada</p>
+    <a href="/" class="btn btn-primary"><i class="material-icons">home</i> Volver al inicio</a>
+  </div>
+
+</body>
+</html>
