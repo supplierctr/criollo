@@ -30,6 +30,13 @@ async function enviarDatosAGoogleSheets() {
     const restaurante = document.getElementById('restaurante-selector').value;
     const url = `https://script.google.com/macros/s/AKfycbxanz_WVCdDGmBc-8melWhb40yhbcDoYr7QtyPRhD-WqlPOVisrG2DKiU8kzPcnmPs/exec?restaurante=${restaurante}`;
     const btn = document.getElementById('guardar-en-sheets');
+    const originalBtnHTML = btn.innerHTML;
+    const originalBtnClass = btn.className;
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="material-icons">hourglass_top</i> Verificando';
+    btn.className = 'btn btn-gray'; // Color gris
+
     try {
         const response = await fetch(url);
         if (!response.ok) throw new Error('No se pudo verificar el estado del servidor.');
@@ -37,24 +44,34 @@ async function enviarDatosAGoogleSheets() {
         const fechaDeHoy = getFechaLocalYYYYMMDD();
         const registrosDeHoy = registrosActuales.filter(r => r.Fecha === fechaDeHoy);
         let sobrescribir = false;
+
         if (registrosDeHoy.length > 0) {
             if (!confirm("Ya existen registros para el día de hoy. ¿Desea sobrescribirlos?")) {
+                // Si el usuario cancela, restaurar el botón y salir
+                btn.disabled = false;
+                btn.innerHTML = originalBtnHTML;
+                btn.className = originalBtnClass;
                 return;
             }
             sobrescribir = true;
+            btn.innerHTML = '<i class="material-icons">autorenew</i> Sobreescribiendo';
+        } else {
+            btn.innerHTML = '<i class="material-icons">cloud_upload</i> Guardando';
         }
+
         const datosParaEnviar = { regular: datosPedidoActual.regular.map(item => ({ ...item, stock: item.stock || '0', pedido: item.pedido || '0' })) };
         const postData = { restaurante: restaurante, datos: datosParaEnviar, sobrescribir: sobrescribir };
-        btn.disabled = true;
-        btn.innerHTML = '<i class="material-icons">hourglass_top</i> Guardando...';
+
         await fetch("https://script.google.com/macros/s/AKfycbxanz_WVCdDGmBc-8melWhb40yhbcDoYr7QtyPRhD-WqlPOVisrG2DKiU8kzPcnmPs/exec", { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8', }, body: JSON.stringify(postData) });
         alert(`Datos guardados en Google Sheets para ${restaurante}.`);
     } catch (error) {
         console.error('Error al enviar los datos:', error);
         alert('Hubo un error al enviar los datos. Revisa la consola del navegador (F12) para ver los detalles.');
     } finally {
+        // Restaurar el botón a su estado original
         btn.disabled = false;
-        btn.innerHTML = '<i class="material-icons">cloud_upload</i> Guardar en Sheets';
+        btn.innerHTML = originalBtnHTML;
+        btn.className = originalBtnClass;
     }
 }
 

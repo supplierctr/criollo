@@ -61,6 +61,8 @@
     .btn-secondary:hover { background-color: #388E3C; }
     .btn-danger { background-color: var(--danger-color); color: white; }
     .btn-danger:hover { background-color: #C62828; }
+    .btn-gray { background-color: var(--dark-gray); color: white; }
+    .btn-gray:hover { background-color: #616161; }
     .btn:disabled { background-color: #bdbdbd; cursor: not-allowed; transform: none; }
     .fixed-footer { position: fixed; bottom: 0; left: 0; width: 100%; background-color: white; box-shadow: 0 -2px 5px rgba(0,0,0,0.1); padding: 15px 20px; box-sizing: border-box; }
     .button-container { display: flex; justify-content: space-around; gap: 10px; flex-wrap: wrap; }
