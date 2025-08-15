@@ -43,41 +43,7 @@
   --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
 }
 
-/* ===== DARK MODE ===== */
-body.dark-mode {
-  --bg-primary: #0f172a;
-  --bg-secondary: #1e293b;
-  --bg-tertiary: #334155;
-  --bg-card: rgba(30, 41, 59, 0.9);
-  
-  --text-primary: #f1f5f9;
-  --text-secondary: #cbd5e1;
-  --text-muted: #64748b;
-  
-  --border-color: #334155;
-  
-  --glass-bg: rgba(30, 41, 59, 0.25);
-  --glass-border: rgba(255, 255, 255, 0.1);
-}
 
-/* Mantener el media query para compatibilidad */
-@media (prefers-color-scheme: dark) {
-  body:not(.light-mode) {
-    --bg-primary: #0f172a;
-    --bg-secondary: #1e293b;
-    --bg-tertiary: #334155;
-    --bg-card: rgba(30, 41, 59, 0.9);
-    
-    --text-primary: #f1f5f9;
-    --text-secondary: #cbd5e1;
-    --text-muted: #64748b;
-    
-    --border-color: #334155;
-    
-    --glass-bg: rgba(30, 41, 59, 0.25);
-    --glass-border: rgba(255, 255, 255, 0.1);
-  }
-}
 
 /* ===== RESET Y BASE ===== */
 * {
@@ -148,60 +114,7 @@ header h1 {
   gap: 1rem;
 }
 
-/* ===== TOGGLE DE TEMA ===== */
-.theme-toggle {
-  background: var(--glass-bg);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--glass-border);
-  border-radius: 50%;
-  width: 48px;
-  height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all var(--transition-normal);
-  position: relative;
-  overflow: hidden;
-}
 
-.theme-toggle:hover {
-  transform: scale(1.1);
-  box-shadow: var(--shadow-lg);
-}
-
-.theme-toggle:active {
-  transform: scale(0.95);
-}
-
-.theme-icon {
-  font-size: 1.5rem;
-  color: white;
-  transition: all var(--transition-normal);
-  position: absolute;
-}
-
-.theme-icon.light {
-  opacity: 1;
-  transform: rotate(0deg);
-}
-
-.theme-icon.dark {
-  opacity: 0;
-  transform: rotate(180deg);
-}
-
-/* Modo oscuro activo */
-body.dark-mode .theme-icon.light {
-  opacity: 0;
-  transform: rotate(-180deg);
-}
-
-body.dark-mode .theme-icon.dark {
-  opacity: 1;
-  transform: rotate(0deg);
-}
 
 /* ===== TEMAS DE RESTAURANTES ===== */
 
@@ -255,18 +168,7 @@ body.theme-allboys .btn-primary:hover {
   background: linear-gradient(135deg, #374151, #6b7280);
 }
 
-/* Modo oscuro con temas */
-body.dark-mode.theme-pacifico {
-  --primary-color: #60a5fa;
-  --primary-dark: #3b82f6;
-  --primary-light: #93c5fd;
-}
 
-body.dark-mode.theme-allboys {
-  --primary-color: #9ca3af;
-  --primary-dark: #6b7280;
-  --primary-light: #d1d5db;
-}
 
 /* ===== SELECTOR CONTAINER ===== */
 .selector-container {
@@ -839,15 +741,6 @@ input[type="number"]:focus, input[type="text"]:focus {
     font-size: 1.5rem;
   }
   
-  .theme-toggle {
-    width: 40px;
-    height: 40px;
-  }
-  
-  .theme-icon {
-    font-size: 1.2rem;
-  }
-  
   .selector-container {
     margin: 1rem;
     padding: 1rem;
@@ -990,37 +883,7 @@ input[type="number"]:focus, input[type="text"]:focus {
   }
 }
 
-/* ===== ANIMACIONES DEL TOGGLE ===== */
-@keyframes themeToggleIn {
-  from {
-    transform: scale(0.8) rotate(-180deg);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1) rotate(0deg);
-    opacity: 1;
-  }
-}
 
-@keyframes themeToggleOut {
-  from {
-    transform: scale(1) rotate(0deg);
-    opacity: 1;
-  }
-  to {
-    transform: scale(0.8) rotate(180deg);
-    opacity: 0;
-  }
-}
-
-.theme-toggle:focus {
-  outline: 2px solid var(--primary-color);
-  outline-offset: 2px;
-}
-
-.theme-toggle:focus:not(:focus-visible) {
-  outline: none;
-}
 
 /* ===== BOTÓN DEBUG ===== */
 .debug-toggle {

@@ -13,7 +13,6 @@ const AppState = {
   registrosCargados: [],
   fechaCalendarioActual: new Date(),
   isLoading: false,
-  theme: localStorage.getItem('theme') || 'light',
   restaurant: localStorage.getItem('restaurant') || 'Pacifico'
 };
 
@@ -64,21 +63,7 @@ const toast = new ToastManager();
 
 class ThemeManager {
   static init() {
-    this.applyTheme(AppState.theme);
     this.applyRestaurantTheme(AppState.restaurant);
-  }
-  static toggleTheme() {
-    const newTheme = AppState.theme === 'light' ? 'dark' : 'light';
-    this.applyTheme(newTheme);
-    AppState.theme = newTheme;
-    localStorage.setItem('theme', newTheme);
-    const themeName = newTheme === 'light' ? 'claro' : 'oscuro';
-    toast.success(`Modo ${themeName} activado`);
-  }
-  static applyTheme(theme) {
-    const body = document.body;
-    body.classList.toggle('dark-mode', theme === 'dark');
-    body.classList.toggle('light-mode', theme === 'light');
   }
   static applyRestaurantTheme(restaurant) {
     const body = document.body;
@@ -95,10 +80,6 @@ class ThemeManager {
     localStorage.setItem('restaurant', restaurant);
   }
   static setupEventListeners() {
-    document.getElementById('theme-toggle').addEventListener('click', (e) => {
-      e.preventDefault();
-      this.toggleTheme();
-    });
     document.getElementById('restaurante-selector').addEventListener('change', (e) => {
       this.applyRestaurantTheme(e.target.value);
       toast.info(`Tema de ${e.target.value} aplicado`);
