@@ -3,58 +3,147 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Criollo 4</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap">
+  <meta name="description" content="Sistema de gestión de pedidos para restaurantes Criollo">
+  <meta name="theme-color" content="#6366f1">
+  <title>Criollo 4 - Gestión de Pedidos</title>
+  
+  <!-- Fuentes modernas -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍽️</text></svg>">
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Criollo 4">
+  
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header id="main-header"><h1>Pedido de Criollo</h1></header>
-
-  <div class="selector-container">
-    <label for="restaurante-selector">Cantina:</label>
-    <select id="restaurante-selector">
-      <option value="Pacifico">Pacifico</option>
-      <option value="AllBoys">AllBoys</option>
-    </select>
-  </div>
-
-  <div class="tab-nav">
-    <button class="tab-link active" data-tab="pedido"><i class="material-icons">list_alt</i>Pedido Principal</button>
-    <button class="tab-link" data-tab="metricas"><i class="material-icons">history</i>Métricas</button>
-  </div>
-
-  <div id="pedido" class="tab-content active">
-    <div class="card">
-      <button class="btn btn-secondary" id="cargar-pedido-hoy"><i class="material-icons">today</i>Cargar Pedido</button>
-      <div id="tabla-principal-wrapper">
-        <table id="tabla-principal" class="styled-table"><thead><tr><th style="width: 90px;">Stock</th><th style="width: 90px;">Pedido</th><th>Artículo</th></tr></thead><tbody></tbody></table>
+  <header id="main-header">
+    <div class="header-content">
+      <h1>🍽️ Pedido de Criollo</h1>
+      <div class="header-controls">
+        <button id="theme-toggle" class="theme-toggle" aria-label="Cambiar modo oscuro/claro" title="Cambiar tema">
+          <i class="material-icons theme-icon light">light_mode</i>
+          <i class="material-icons theme-icon dark">dark_mode</i>
+        </button>
+        <button id="debug-toggle" class="debug-toggle" aria-label="Modo debug" title="Debug" style="display: none;">
+          <i class="material-icons">bug_report</i>
+        </button>
       </div>
     </div>
-  </div>
-  
-  <div id="metricas" class="tab-content">
-    <div class="card">
-      <h2>Métricas por Fecha</h2>
-      <button class="btn btn-secondary" id="cargar-metricas" style="margin-bottom: 20px;"><i class="material-icons">refresh</i>Cargar Todos los Registros</button>
-      <div id="calendario-container" style="display: none;">
-        <div id="calendario-controles">
-            <button id="mes-anterior" class="btn"><i class="material-icons">chevron_left</i></button>
-            <span id="mes-anio-actual"></span>
-            <button id="mes-siguiente" class="btn"><i class="material-icons">chevron_right</i></button>
-        </div>
-        <div id="calendario-grid"></div>
-      </div>
-    </div>
-    <div class="card">
-        <h2 id="registros-titulo">Registros del Día</h2>
-        <div id="tabla-metricas-wrapper">
-            <table id="tabla-metricas" class="styled-table"><thead><tr><th>Artículo</th><th>Stock</th><th>Pedido</th></tr></thead><tbody><tr><td colspan="3" style="text-align:center;">Carga los registros y selecciona un día.</td></tr></tbody></table>
-        </div>
-    </div>
-  </div>
+  </header>
 
-  <div class="fixed-footer"><div class="button-container"><button class="btn btn-danger" id="borrar-datos" title="Borrar datos del pedido actual"><i class="material-icons">delete</i>Borrar Pedido</button><button class="btn btn-primary" id="guardar-en-sheets" title="Guardar el pedido actual en Google Sheets"><i class="material-icons">cloud_upload</i>Guardar en Sheets</button></div></div>
+  <main>
+    <div class="selector-container">
+      <label for="restaurante-selector">🏪 Cantina:</label>
+      <select id="restaurante-selector" aria-label="Seleccionar restaurante">
+        <option value="Pacifico">🌊 Pacifico</option>
+        <option value="AllBoys">⚽ AllBoys</option>
+      </select>
+    </div>
+
+    <nav class="tab-nav" role="tablist">
+      <button class="tab-link active" data-tab="pedido" role="tab" aria-selected="true" aria-controls="pedido">
+        <i class="material-icons" aria-hidden="true">list_alt</i>
+        <span>Pedido Principal</span>
+      </button>
+      <button class="tab-link" data-tab="metricas" role="tab" aria-selected="false" aria-controls="metricas">
+        <i class="material-icons" aria-hidden="true">history</i>
+        <span>Métricas</span>
+      </button>
+    </nav>
+
+    <section id="pedido" class="tab-content active" role="tabpanel" aria-labelledby="pedido">
+      <div class="card">
+        <button class="btn btn-secondary" id="cargar-pedido-hoy" aria-label="Cargar pedido del día">
+          <i class="material-icons" aria-hidden="true">today</i>
+          <span>Cargar Pedido</span>
+        </button>
+        
+        <div id="tabla-principal-wrapper" class="table-container">
+          <table id="tabla-principal" class="styled-table" role="table" aria-label="Tabla de pedidos principales">
+            <thead>
+              <tr>
+                <th scope="col" style="width: 90px;">📦 Stock</th>
+                <th scope="col" style="width: 90px;">📋 Pedido</th>
+                <th scope="col">🏷️ Artículo</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+    
+    <section id="metricas" class="tab-content" role="tabpanel" aria-labelledby="metricas">
+      <div class="card">
+        <h2>📊 Métricas por Fecha</h2>
+        <button class="btn btn-secondary" id="cargar-metricas" style="margin-bottom: 20px;" aria-label="Cargar todos los registros">
+          <i class="material-icons" aria-hidden="true">refresh</i>
+          <span>Cargar Todos los Registros</span>
+        </button>
+        
+        <div id="calendario-container" style="display: none;" class="calendar-section">
+          <div id="calendario-controles" class="calendar-controls">
+            <button id="mes-anterior" class="btn" aria-label="Mes anterior">
+              <i class="material-icons" aria-hidden="true">chevron_left</i>
+            </button>
+            <span id="mes-anio-actual" class="current-month"></span>
+            <button id="mes-siguiente" class="btn" aria-label="Mes siguiente">
+              <i class="material-icons" aria-hidden="true">chevron_right</i>
+            </button>
+          </div>
+          <div id="calendario-grid" class="calendar-grid" role="grid" aria-label="Calendario de métricas"></div>
+        </div>
+      </div>
+      
+      <div class="card">
+        <h2 id="registros-titulo">📈 Registros del Día</h2>
+        <div id="tabla-metricas-wrapper" class="table-container">
+          <table id="tabla-metricas" class="styled-table" role="table" aria-label="Tabla de métricas">
+            <thead>
+              <tr>
+                <th scope="col">🏷️ Artículo</th>
+                <th scope="col">📦 Stock</th>
+                <th scope="col">📋 Pedido</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td colspan="3" style="text-align:center; color: var(--text-muted);">
+                  <i class="material-icons" style="font-size: 2rem; margin-bottom: 0.5rem;">info</i>
+                  <br>Carga los registros y selecciona un día.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="fixed-footer">
+    <div class="button-container">
+      <button class="btn btn-danger" id="borrar-datos" title="Borrar datos del pedido actual" aria-label="Borrar pedido actual">
+        <i class="material-icons" aria-hidden="true">delete</i>
+        <span>Borrar Pedido</span>
+      </button>
+      <button class="btn btn-primary" id="guardar-en-sheets" title="Guardar el pedido actual en Google Sheets" aria-label="Guardar en Google Sheets">
+        <i class="material-icons" aria-hidden="true">cloud_upload</i>
+        <span>Guardar en Sheets</span>
+      </button>
+    </div>
+  </footer>
+
+  <!-- Notificaciones toast -->
+  <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
 
   <script src="script.js"></script>
 </body>
