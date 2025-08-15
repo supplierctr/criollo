@@ -1,6 +1,6 @@
 # 🍽️ Criollo 4 - Sistema de Gestión de Pedidos
 
-Una aplicación web moderna y progresiva (PWA) para la gestión de pedidos de restaurantes, con integración completa con Google Sheets.
+Una aplicación web moderna para la gestión de pedidos de restaurantes, con integración completa con Google Sheets.
 
 ## ✨ Características Principales
 
@@ -22,13 +22,20 @@ Una aplicación web moderna y progresiva (PWA) para la gestión de pedidos de re
 ### 📊 **Gestión de Datos**
 - **Integración Google Sheets**: Mantiene la funcionalidad existente
 - **Sincronización Automática**: Datos siempre actualizados
-- **Historial Completo**: Métricas y estadísticas
+- **Historial Completo**: Métricas y estadísticas sin filtros de fecha.
 - **Calendario Interactivo**: Visualización de datos por fecha
+
+## 🚀 Instalación y Uso
 
 ### Requisitos
 - Navegador moderno (Chrome, Firefox, Safari, Edge)
 - Conexión a internet para sincronización con Google Sheets
-- Servidor web (local o remoto)
+- Servidor web (local o remoto) para un correcto funcionamiento.
+
+### Instalación Local
+1. Clona o descarga los archivos.
+2. Abre `index.html` en tu navegador (preferiblemente desde un servidor local).
+3. ¡Listo! La aplicación se cargará automáticamente.
 
 ## 📁 Estructura del Proyecto
 
@@ -37,8 +44,6 @@ criollo/
 ├── index.html          # Página principal
 ├── style.css           # Estilos modernos
 ├── script.js           # Lógica de la aplicación
-├── manifest.json       # Configuración PWA
-├── sw.js              # Service Worker
 ├── 404.html           # Página de error
 └── README.md          # Este archivo
 ```
@@ -56,7 +61,7 @@ criollo/
 - Calendario interactivo con datos históricos
 - Visualización de registros por fecha
 - Navegación entre meses
-- Estadísticas detalladas
+- Carga de todo el historial de registros sin filtros.
 
 ### ⚙️ **Configuración**
 - Selección de restaurante (Pacifico/AllBoys)
@@ -69,18 +74,13 @@ criollo/
 ### Frontend
 - **HTML5**: Estructura semántica moderna
 - **CSS3**: Variables CSS, Grid, Flexbox, Animaciones
-- **JavaScript ES6+**: Clases, Async/Await, Modules
+- **JavaScript ES6+**: Clases, Async/Await
 - **Material Icons**: Iconografía consistente
-
-### PWA
-- **Service Worker**: Cache y funcionalidad offline
-- **Web App Manifest**: Configuración de instalación
-- **IndexedDB**: Almacenamiento local (preparado)
 
 ### Integración
 - **Google Sheets API**: Base de datos en la nube
 - **Fetch API**: Comunicación asíncrona
-- **LocalStorage**: Cache local
+- **LocalStorage**: Cache local para preferencias
 
 ## 🎨 Personalización
 
@@ -96,60 +96,20 @@ Los colores se pueden personalizar editando las variables CSS en `style.css`:
 }
 ```
 
-### Temas y Modo Oscuro
-La aplicación incluye un toggle manual para cambiar entre modo claro y oscuro, además de temas específicos para cada restaurante:
-
-```css
-/* Tema Pacifico - Azules */
-body.theme-pacifico {
-  --primary-color: #3b82f6;
-  --primary-dark: #1d4ed8;
-}
-
-/* Tema AllBoys - Grises/Negros */
-body.theme-allboys {
-  --primary-color: #6b7280;
-  --primary-dark: #374151;
-}
-
-/* Modo oscuro */
-body.dark-mode {
-  /* Variables para modo oscuro */
-}
-```
-
-**Características:**
-- 🌞/🌙 Toggle manual en el header
-- 🏪 Temas automáticos según restaurante seleccionado
-- 💾 Persistencia de preferencias
-- 🎨 Transiciones suaves entre temas
-
 ## 📱 Características Móviles
 
 ### Responsive Design
 - **Mobile First**: Optimizada para dispositivos móviles
 - **Touch Friendly**: Botones y controles táctiles
-- **Gestos**: Soporte para gestos nativos
-- **Orientación**: Adaptable a portrait y landscape
-
-### PWA Features
-- **Instalación**: Se puede instalar como app nativa
-- **Offline**: Funciona sin conexión
-- **Notificaciones**: Sistema de notificaciones push
-- **Splash Screen**: Pantalla de carga personalizada
+- **Adaptable**: Se ajusta a diferentes tamaños de pantalla y orientaciones.
 
 ## 🔒 Seguridad y Privacidad
 
 ### Datos
-- **Local**: Los datos se procesan localmente
-- **Google Sheets**: Solo se envían datos necesarios
-- **Sin Tracking**: No se recopilan datos de uso
-- **HTTPS**: Recomendado para producción
-
-### Permisos
-- **Notificaciones**: Opcional para actualizaciones
-- **Storage**: Solo para cache local
-- **Network**: Solo para sincronización
+- **Local**: Los datos se procesan en el navegador.
+- **Google Sheets**: Solo se envían los datos del pedido al confirmar.
+- **Sin Tracking**: No se recopilan datos de uso.
+- **HTTPS**: Recomendado para producción.
 
 ## 🚀 Próximas Mejoras
 
@@ -157,7 +117,7 @@ body.dark-mode {
 - [ ] **Búsqueda en Tiempo Real**: Filtros avanzados
 - [ ] **Exportación PDF/Excel**: Reportes descargables
 - [ ] **Sistema de Usuarios**: Roles y permisos
-- [ ] **Notificaciones Push**: Alertas automáticas
+- [ ] **Notificaciones Push**: Alertas automáticas (requeriría PWA)
 - [ ] **Analytics**: Estadísticas avanzadas
 - [ ] **Backup Automático**: Respaldo de datos
 
@@ -183,14 +143,13 @@ body.dark-mode {
 
 ## 📄 Licencia
 
-Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles.
+Este proyecto está bajo la Licencia MIT.
 
 ## 🙏 Agradecimientos
 
 - **Google Sheets**: Por proporcionar la base de datos
 - **Material Design**: Por los iconos y principios de diseño
 - **Inter Font**: Por la tipografía moderna
-- **PWA Community**: Por las mejores prácticas
 
 ---
 
