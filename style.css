@@ -1079,7 +1079,7 @@ select:focus-visible {
 /* ===== ESTADOS DE CARGA MEJORADOS ===== */
 .btn.loading {
   position: relative;
-  color: transparent;
+  color: #000; /* Texto negro para legibilidad */
 }
 
 .btn.loading::after {
