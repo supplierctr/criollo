@@ -12,13 +12,6 @@ Una aplicación web moderna y progresiva (PWA) para la gestión de pedidos de re
 - **Animaciones Suaves**: Transiciones y efectos visuales modernos
 - **Fuente Inter**: Tipografía moderna y legible
 
-### 📱 **Progressive Web App (PWA)**
-- **Instalable**: Se puede instalar como app nativa
-- **Offline**: Funciona sin conexión a internet
-- **Service Worker**: Cache inteligente y sincronización
-- **Notificaciones Push**: Sistema de notificaciones
-- **Manifest**: Configuración completa de PWA
-
 ### 🔧 **Funcionalidades Avanzadas**
 - **Sistema de Notificaciones**: Toast notifications modernas
 - **Validación en Tiempo Real**: Validación de inputs
@@ -32,22 +25,10 @@ Una aplicación web moderna y progresiva (PWA) para la gestión de pedidos de re
 - **Historial Completo**: Métricas y estadísticas
 - **Calendario Interactivo**: Visualización de datos por fecha
 
-## 🚀 Instalación y Uso
-
 ### Requisitos
 - Navegador moderno (Chrome, Firefox, Safari, Edge)
 - Conexión a internet para sincronización con Google Sheets
 - Servidor web (local o remoto)
-
-### Instalación Local
-1. Clona o descarga los archivos
-2. Abre `index.html` en tu navegador
-3. ¡Listo! La aplicación se cargará automáticamente
-
-### Instalación como PWA
-1. Abre la aplicación en Chrome/Edge
-2. Haz clic en el ícono de instalación en la barra de direcciones
-3. O ve a Menú → "Instalar Criollo 4"
 
 ## 📁 Estructura del Proyecto
 
